@@ -9,3 +9,8 @@ export const authMe = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: "Server error" })
   }
 }
+
+export const test = async (req: Request, res: Response): Promise<void> => {
+  res.status(204).send()
+  return
+} 
