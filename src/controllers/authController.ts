@@ -128,3 +128,45 @@ export const signOut = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: "Internal server error." });
   }
 }
+
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Get refresh token from cookie
+    const token = req.cookies?.refreshToken
+    if (!token) {
+      res.status(401).json({ message: "Token does not exist" })
+      return
+    }
+
+    // compare with refresh token in db
+    const session = await Session.findOne({ refreshToken: token })
+    if (!session) {
+      res.status(403).json({ message: "Invalid token or expired"})
+      return
+    }
+
+    // check if the token has expired.
+    if (session.expiresAt < new Date()) {
+      res.status(403).json({ message: "Token expired"})
+      return
+    }
+
+    // create new token
+    const accessToken = jwt.sign(
+      {
+        userId: session.userId
+      },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      { expiresIn: ACCESS_TOKEN_TTL}
+    )
+
+    // return
+    res.status(200).json({ accessToken })
+    return
+
+  } catch (error) {
+    console.error("Failed to call refreshToken", error)
+    res.status(500).json({ message: "Internal server error." })
+    return
+  }
+}
