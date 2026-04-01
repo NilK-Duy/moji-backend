@@ -51,7 +51,7 @@ const lastMessagesSchema = new mongoose.Schema({
   }
 )
 
-const converstationSchema = new mongoose.Schema({
+const conversationSchema = new mongoose.Schema({
     type: {
       type: String,
       enum: ["direct", "group"],
@@ -88,11 +88,11 @@ const converstationSchema = new mongoose.Schema({
   }
 )
 
-converstationSchema.index({
+conversationSchema.index({
   "participant.userId": 1,
   lastMessageAt: -1
 })
 
-const Converstation = mongoose.model("Conversation", converstationSchema)
+const Conversation = mongoose.model("Conversation", conversationSchema)
 
-export default Converstation
+export default Conversation
